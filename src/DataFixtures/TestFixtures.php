@@ -60,6 +60,18 @@ class TestFixtures extends Fixture
             $this->manager->persist($tag);
         }
 
+        // données de test dynamiques
+        for ($i = 0; $i < 10; $i++) {
+            // création d'un nouvel objet
+            $tag = new Tag();
+            // affectation des valeurs dynamiques
+            $tag->setName(ucfirst($this->faker->word()));
+            $tag->setDescription($this->faker->sentence());
+
+            // demande d'enregistrement de l'objet
+            $this->manager->persist($tag);
+        }
+
         // exécution des requêtes SQL
         $this->manager->flush();
     }
