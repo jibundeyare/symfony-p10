@@ -22,9 +22,6 @@ class Student
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -40,6 +37,9 @@ class Student
 
     #[ORM\ManyToOne(inversedBy: 'students')]
     private ?Project $project = null;
+
+    #[ORM\OneToOne(mappedBy: 'student', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -71,18 +71,6 @@ class Student
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
 
         return $this;
     }
@@ -155,6 +143,28 @@ class Student
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($user === null && $this->user !== null) {
+            $this->user->setStudent(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($user !== null && $user->getStudent() !== $this) {
+            $user->setStudent($this);
+        }
+
+        $this->user = $user;
 
         return $this;
     }
