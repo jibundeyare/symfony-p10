@@ -3,8 +3,10 @@
 namespace App\DataFixtures;
 
 use DateTime;
+use DateTimeImmutable;
 use App\Entity\Project;
 use App\Entity\SchoolYear;
+use App\Entity\Student;
 use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -48,6 +50,7 @@ class TestFixtures extends Fixture
                 'startDate' => DateTime::createFromFormat('d/m/Y', '01/02/2023'),
                 'checkPointDate' => DateTime::createFromFormat('d/m/Y', '01/03/2023'),
                 'deliveryDate' => DateTime::createFromFormat('d/m/Y', '01/04/2023'),
+                // @todo ajouter les tags id 1, id 2 et id 3 de la liste des tags
             ],
             [
                 'name' => 'Student',
@@ -56,6 +59,7 @@ class TestFixtures extends Fixture
                 'startDate' => DateTime::createFromFormat('d/m/Y', '01/02/2023'),
                 'checkPointDate' => DateTime::createFromFormat('d/m/Y', '01/03/2023'),
                 'deliveryDate' => DateTime::createFromFormat('d/m/Y', '01/04/2023'),
+                // @todo ajouter les tags id 1, id 2 et id 3 de la liste des tags
             ],
         ];
 
@@ -81,6 +85,8 @@ class TestFixtures extends Fixture
             $project->setCheckPointDate($this->faker->optional($weight = 0.2)->dateTimeBetween('-2 week', '-1 week'));
             $project->setDeliveryDate($this->faker->optional($weight = 0.3)->dateTimeBetween('+2 month', '+3 month'));
 
+            // @todo ajouter des tags au projets de façon aléatoire
+
             $this->manager->persist($project);
         }
 
@@ -100,6 +106,83 @@ class TestFixtures extends Fixture
         // projects
         $repository = $this->manager->getRepository(Project::class);
         $projects = $repository->findAll();
+
+        // données de test statiques
+        $datas = [
+            [
+                // user
+                'email' => 'foo.bar@example.com',
+                'password' => '123',
+                'roles' => ['ROLE_USER'],
+                // student
+                'firstname' => 'Foo',
+                'lastname' => 'Bar',
+                'createdAt' => DateTimeImmutable::createFromFormat('d/m/Y', '01/01/2022'),
+                'schoolYear' => $schoolYears[0],
+                'project' => $projects[0],
+                'tags' => [$tags[0], $tags[1], $tags[2]],
+            ],
+            [
+                // user
+                'email' => 'baz.baz@example.com',
+                'password' => '123',
+                'roles' => ['ROLE_USER'],
+                // student
+                'firstname' => 'Baz',
+                'lastname' => 'Baz',
+                'createdAt' => DateTimeImmutable::createFromFormat('d/m/Y', '02/01/2022'),
+                'schoolYear' => $schoolYears[0],
+                'project' => $projects[0],
+                'tags' => [$tags[0], $tags[1], $tags[2]],
+            ],
+        ];
+
+        foreach ($datas as $data) {
+            $user = new User();
+            $user->setEmail($data['email']);
+            $password = $this->hasher->hashPassword($user, $data['password']);
+            $user->setPassword($password);
+            $user->setRoles($data['roles']);
+
+            $student = new Student();
+            $student->setFirstname($data['firstname']);
+            $student->setLastname($data['lastname']);
+            $student->setCreatedAt($data['createdAt']);
+            $student->setUser($user);
+            $student->setSchoolYear($data['schoolYear']);
+            $student->setProject($data['project']);
+
+            foreach ($data['tags'] as $tag) {
+                $student->addTag($tag);
+            }
+
+            $this->manager->persist($student);
+        }
+
+        // données de test dynamiques
+        for ($i = 0; $i < 100; $i++) {
+            $user = new User();
+            $user->setEmail($this->faker->email());
+            $password = $this->hasher->hashPassword($user, '123');
+            $user->setPassword($password);
+            $user->setRoles(['ROLE_USER']);
+
+            $student = new Student();
+            $student->setFirstname($this->faker->firstname());
+            $student->setLastname($this->faker->lastname());
+            $student->setCreatedAt(new DateTimeImmutable());
+            $student->setUser($user);
+            $student->setSchoolYear($this->faker->randomElement($schoolYears));
+            $student->setProject($this->faker->randomElement($projects));
+
+            foreach ($this->faker->randomElements($tags) as $tag) {
+                $student->addTag($tag);
+            }
+
+            $this->manager->persist($student);
+        }
+
+        $this->manager->flush();
     }
 
     public function loadSchoolYears(): void

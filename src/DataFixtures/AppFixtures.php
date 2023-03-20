@@ -24,6 +24,8 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        // @todo ajouter la création d'un compte admin (c-à-d un user non rattaché à un student)
+
         $manager->flush();
     }
 }
