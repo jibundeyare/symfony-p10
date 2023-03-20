@@ -34,7 +34,7 @@ class TestFixtures extends Fixture
         $this->loadSchoolYears();
     }
 
-    public function loadSchoolYears()
+    public function loadSchoolYears(): void
     {
         // données de test statiques
         $datas = [
