@@ -39,6 +39,33 @@ class TagRepository extends ServiceEntityRepository
         }
     }
 
+   /**
+    * @return Tag[] Returns an array of Tag objects
+    */
+   public function findAllOrderByName(): array
+   {
+       return $this->createQueryBuilder('t')
+           ->orderBy('t.name', 'ASC')
+           ->getQuery()
+           ->getResult()
+       ;
+   }
+
+   /**
+    * @return Tag[] Returns an array of Tag objects
+    */
+   public function findByKeyword($keyword): array
+   {
+       return $this->createQueryBuilder('t')
+           ->andWhere('t.name LIKE :keyword')
+           ->orWhere('t.description LIKE :keyword')
+           ->setParameter('keyword', "%$keyword%")
+           ->orderBy('t.name', 'ASC')
+           ->getQuery()
+           ->getResult()
+       ;
+   }
+
 //    /**
 //     * @return Tag[] Returns an array of Tag objects
 //     */
