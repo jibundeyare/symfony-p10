@@ -31,6 +31,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         // @todo ajouter la création d'un compte admin (c-à-d un user non rattaché à un student)
+        // @info les admin possède le rôle ROLE_ADMIN
 
         $manager->flush();
     }
