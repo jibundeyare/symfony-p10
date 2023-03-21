@@ -3,17 +3,23 @@
 namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class AppFixtures extends Fixture
+class AppFixtures extends Fixture implements FixtureGroupInterface
 {
     private $doctrine;
     private $faker;
     private $hasher;
+
+    public static function getGroups(): array
+    {
+        return ['prod'];
+    }
 
     public function __construct(ManagerRegistry $doctrine, UserPasswordHasherInterface $hasher)
     {

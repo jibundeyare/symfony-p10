@@ -10,18 +10,24 @@ use App\Entity\Student;
 use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class TestFixtures extends Fixture
+class TestFixtures extends Fixture implements FixtureGroupInterface
 {
     private $doctrine;
     private $faker;
     private $hasher;
     private $manager;
+
+    public static function getGroups(): array
+    {
+        return ['test'];
+    }
 
     public function __construct(ManagerRegistry $doctrine, UserPasswordHasherInterface $hasher)
     {
