@@ -54,7 +54,7 @@ class TagRepository extends ServiceEntityRepository
    /**
     * @return Tag[] Returns an array of Tag objects
     */
-   public function findByKeyword($keyword): array
+   public function findByKeyword(string $keyword): array
    {
        return $this->createQueryBuilder('t')
            ->andWhere('t.name LIKE :keyword')
