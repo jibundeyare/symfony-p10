@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use DateTime;
+use App\Entity\Project;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,12 +14,29 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/test')]
 class TestController extends AbstractController
 {
+    #[Route('/project', name: 'app_test_project')]
+    public function project(ManagerRegistry $doctrine): Response
+    {
+        $repository = $doctrine->getRepository(Project::class);
+
+        $dateStart = DateTime::createFromFormat('d/m/Y', '01/03/2023');
+        $dateEnd = DateTime::createFromFormat('d/m/Y', '01/05/2023');
+        $projects = $repository->findByDeliveryDateBetween($dateStart, $dateEnd);
+        dump($projects);
+
+        exit();
+    }
+
     // le préfixe + l'url de la route => '/test/user'
     #[Route('/user', name: 'app_test_user')]
     public function user(UserRepository $repository): Response
     {
-        $users = $repository->findAllStudent();
-        dump($users);
+        $students = $repository->findAllStudents();
+        dump($students);
+
+        $admins = $repository->findAllAdmins();
+        dump($admins);
+
         exit();
     } 
 

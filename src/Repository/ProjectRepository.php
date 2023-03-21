@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use DateTime;
 use App\Entity\Project;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -38,6 +39,22 @@ class ProjectRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+   /**
+    * @return Project[] Returns an array of Project objects
+    */
+   public function findByDeliveryDateBetween(DateTime $dateStart, DateTime $dateEnd): array
+   {
+       return $this->createQueryBuilder('p')
+           ->andWhere('p.deliveryDate >= :dateStart')
+           ->andWhere('p.deliveryDate < :dateEnd')
+           ->setParameter('dateStart', $dateStart->format('Y-m-d H:i:s'))
+           ->setParameter('dateEnd', $dateEnd->format('Y-m-d H:i:s'))
+           ->orderBy('p.deliveryDate', 'ASC')
+           ->getQuery()
+           ->getResult()
+       ;
+   }
 
 //    /**
 //     * @return Project[] Returns an array of Project objects
